@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SuperTrend Bot - Configuración</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec5b13",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221610",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation Header -->
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 py-3 lg:px-20">
+<div class="flex items-center gap-4">
+<img alt="SuperTrend Bot Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAx2LSaFnNdOCtq4gqoNvbh9FCf_DqRpLl1Do6t3FbinBHOqlLXyS62MNY6EKuwKt7Y392YLY1cppuFP-3nUuFUVidGGdtrESDsuCP8_pPOXAtGE0DhDJFNxmsqRUxN4lyHzsCDQgIF9xf-ZPxuzh1Q6F5erDPKWcZHKva69CakEO8sES7-6RGwyW27ouaJdmfISWFCtEbYapSAiHHIQTxPf7L6HLcj4c4Av3-8Jp0oZEyHsQTMBfO5xusGqd9eyWt6Oqe9iYEJCcQ"/>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">SuperTrend Bot</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex items-center justify-center rounded-xl size-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-1 flex justify-center py-8 px-4 lg:px-20">
+<div class="max-w-4xl w-full flex flex-col gap-8">
+<!-- Title Section -->
+<div class="flex flex-col gap-2">
+<h1 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Configuración de Trading</h1>
+<p class="text-slate-500 dark:text-slate-400">Gestiona tus credenciales de Bybit y personaliza los parámetros de tu estrategia SuperTrend.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Left Column: API Connection -->
+<div class="md:col-span-2 space-y-6">
+<!-- API Credentials Card -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-2 mb-6 text-primary">
+<span class="material-symbols-outlined">vpn_key</span>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Credenciales de API Bybit</h3>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Entorno de Trading</label>
+<div class="grid grid-cols-2 gap-4">
+<label class="relative flex cursor-pointer rounded-xl border-2 border-primary bg-primary/5 p-4 focus:outline-none">
+<input checked="" class="sr-only" name="env" type="radio" value="mainnet"/>
+<span class="flex flex-1 flex-col">
+<span class="block text-sm font-bold text-slate-900 dark:text-white uppercase">Mainnet</span>
+<span class="mt-1 flex items-center text-xs text-slate-500 dark:text-slate-400">Fondos Reales</span>
+</span>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</label>
+<label class="relative flex cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 p-4 focus:outline-none hover:bg-slate-50 dark:hover:bg-slate-800/50">
+<input class="sr-only" name="env" type="radio" value="testnet"/>
+<span class="flex flex-1 flex-col">
+<span class="block text-sm font-bold text-slate-900 dark:text-white uppercase">Testnet</span>
+<span class="mt-1 flex items-center text-xs text-slate-500 dark:text-slate-400">Demo / Pruebas</span>
+</span>
+</label>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">API Key</label>
+<input class="form-input block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 px-4" placeholder="Pega tu API Key de Bybit" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Secret Key</label>
+<input class="form-input block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 px-4" placeholder="••••••••••••••••" type="password"/>
+</div>
+<div class="pt-4 flex items-center gap-4">
+<button class="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">sync_alt</span>
+                                            Probar Conexión
+                                        </button>
+<div class="flex items-center gap-2 text-emerald-500 text-sm font-medium">
+<span class="material-symbols-outlined text-base">check_circle</span>
+<span>Conexión establecida</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Strategy Parameters Card -->
+<section class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex items-center gap-2 mb-6 text-primary">
+<span class="material-symbols-outlined">tune</span>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Parámetros de Estrategia</h3>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Par de Trading</label>
+<select class="form-select block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 px-4">
+<option value="BTCUSDT">BTC / USDT</option>
+<option value="ETHUSDT">ETH / USDT</option>
+<option value="SOLUSDT">SOL / USDT</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Temporalidad (Timeframe)</label>
+<select class="form-select block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 px-4">
+<option value="1m">1 minuto</option>
+<option value="5m">5 minutos</option>
+<option selected="" value="15m">15 minutos</option>
+<option value="1h">1 hora</option>
+<option value="4h">4 horas</option>
+</select>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Cantidad por Orden (USDT)</label>
+<div class="relative">
+<input class="form-input block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 pl-4 pr-12" placeholder="100" type="number"/>
+<span class="absolute right-4 top-3 text-slate-400 font-medium">USDT</span>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Apalancamiento (Leverage)</label>
+<div class="relative">
+<input class="form-input block w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:border-primary focus:ring-primary h-12 pl-4 pr-12" max="100" min="1" placeholder="10" type="number"/>
+<span class="absolute right-4 top-3 text-slate-400 font-medium">x</span>
+</div>
+</div>
+</div>
+<div class="mt-8 border-t border-slate-100 dark:border-slate-800 pt-6 flex justify-end">
+<button class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all hover:shadow-lg active:scale-95">
+                                        Guardar Configuración
+                                    </button>
+</div>
+</section>
+</div>
+<!-- Right Column: Info & Status -->
+<div class="flex flex-col gap-6">
+<!-- Info Alert -->
+<div class="bg-primary/10 border border-primary/20 p-4 rounded-xl">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">info</span>
+<div class="flex flex-col gap-1">
+<p class="text-sm font-bold text-primary">Consejo de Seguridad</p>
+<p class="text-xs text-slate-600 dark:text-slate-400">Asegúrate de que tu API Key tenga permisos de 'Trading' activados, pero 'Retiros' desactivados.</p>
+</div>
+</div>
+</div>
+<!-- Bot Status Preview -->
+<div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
+<h4 class="text-sm font-bold text-slate-900 dark:text-white mb-4">Estado del Bot</h4>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Estrategia</span>
+<span class="text-xs font-bold text-slate-900 dark:text-white">SuperTrend V2</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Modo de Margen</span>
+<span class="text-xs font-bold text-slate-900 dark:text-white">Aislado (Isolated)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs text-slate-500 dark:text-slate-400">Estado</span>
+<span class="flex items-center gap-1.5 text-xs font-bold text-amber-500">
+<span class="size-2 rounded-full bg-amber-500"></span>
+                                            Esperando Guardado
+                                        </span>
+</div>
+</div>
+<div class="mt-6">
+<div class="h-32 w-full rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center text-slate-400 gap-2">
+<span class="material-symbols-outlined">analytics</span>
+<p class="text-[10px] text-center px-4 uppercase tracking-widest font-bold">Gráfico Previo Indisponible</p>
+</div>
+</div>
+</div>
+<!-- Helpful Links -->
+<div class="flex flex-col gap-2">
+<a class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" href="#">
+<span class="text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">description</span>
+                                        Documentación API
+                                    </span>
+<span class="material-symbols-outlined text-base">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300" href="#">
+<span class="text-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-lg">support_agent</span>
+                                        Soporte Técnico
+                                    </span>
+<span class="material-symbols-outlined text-base">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="border-t border-slate-200 dark:border-slate-800 py-6 px-4 lg:px-20 text-center">
+<p class="text-xs text-slate-500 dark:text-slate-400">© 2024 SuperTrend Bot. Operar criptomonedas conlleva riesgos. Opera bajo tu propia responsabilidad.</p>
+</footer>
+</div>
+</div>
+</body></html>

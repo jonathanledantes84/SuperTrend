@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SuperTrend Bot - Logs de Trading</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#ec5b13",
+              "background-light": "#f8f6f6",
+              "background-dark": "#221610",
+            },
+            fontFamily: {
+              "display": ["Public Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 px-6 py-3 bg-white dark:bg-background-dark/50 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<img alt="SuperTrend Bot Logo" class="h-10 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXv7IgQd9rRcNm8-CWsDt_lFKRlzn0Yc21GRfq2epzmgFH5YUfTAGkvIOYcfhRTxo7uUptQ8MCvQJchNiIReBKNho2agpMyI8sA3d4d6QhkXdWNqcSK_-9-Kakqrmt2GxVWN4oROUGytlND-hQSVY8N7LXbWcS8hKqzFZyv6dLlIqf2uBSj2Br8TvFZ56YUkyxlJFAmcYFDHk37rwfkcgCDOLxSMIz7mtORTWQqcp-Aq2T578saFwPn3tkUxhTeSMlwCvhp5z4yRQ"/>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Bots</a>
+<a class="text-primary text-sm font-bold border-b-2 border-primary pb-1" href="#">Logs</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium transition-colors" href="#">Ajustes</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4">
+<label class="flex flex-col min-w-40 h-10 max-w-64 relative">
+<div class="flex w-full flex-1 items-stretch rounded-xl h-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+<div class="text-slate-400 flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-slate-400 px-3" placeholder="Buscar en logs..." value=""/>
+</div>
+</label>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border border-slate-200 dark:border-slate-700" data-alt="Avatar de usuario con perfil circular" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBxOQDgiVHRn1QooyBYLpdGlR3MgZlTjjdfFcF-6Npy5GBVWpJKr9p0Or88kmeLcRY9aUkwePtOWlahpXbHYIYNbDQqHszGmHej2vWiaMM2_yEA0VacbeKQk-QOJyOC3xpbS6EAlQtjZP1hEwDS2lDrHDEtxLGEnADcETVrHAzMPI6k9xP5d_ymjkxQPGr1cnD0mIXQPqLnktC_bt8J4UJ35Gpdt33RgoLeMS6unmMg3mgSg_JZsffBLPU6HFkBVFLj622hYX3FXCw");'>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-[1200px] mx-auto w-full p-6 space-y-6">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<div class="flex flex-col gap-1">
+<h1 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">Logs de Trading</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Monitoreo en tiempo real de operaciones y eventos del sistema SuperTrend.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 text-sm font-semibold transition-all">
+<span class="material-symbols-outlined text-[18px]">delete_sweep</span>
+                    Limpiar Logs
+                </button>
+<button class="flex items-center gap-2 rounded-xl bg-primary hover:bg-primary/90 text-white px-4 py-2 text-sm font-semibold shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                    Exportar CSV
+                </button>
+</div>
+</div>
+<!-- Filters Section -->
+<div class="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+<div class="flex gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+<button class="flex items-center justify-center gap-2 rounded-xl bg-primary/10 text-primary px-4 py-2 text-sm font-bold whitespace-nowrap">
+                    Todos
+                </button>
+<button class="flex items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                    Ordenes
+                </button>
+<button class="flex items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                    Sistema
+                </button>
+<button class="flex items-center justify-center gap-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">error</span>
+                    Errores
+                </button>
+</div>
+<div class="flex items-center gap-2 text-slate-400 text-xs font-medium px-4">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+                Sincronizado: Justo ahora
+            </div>
+</div>
+<!-- Trading Logs Table -->
+<div class="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Fecha / Hora</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Tipo</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Mensaje</th>
+<th class="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">Estado</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Log Entry 1 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
+                                2023-11-20 14:30:21
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                                    Orden
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs md:max-w-md truncate">
+                                Compra ejecutada BTC/USDT a 35,240.50 (Market)
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2.5 py-0.5 text-xs font-bold text-green-700 dark:text-green-400">
+                                    SUCCESS
+                                </span>
+</td>
+</tr>
+<!-- Log Entry 2 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
+                                2023-11-20 14:28:05
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                                    Sistema
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs md:max-w-md truncate">
+                                Reinicio de WebSocket por latencia detectada en API
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<span class="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-bold text-blue-700 dark:text-blue-400">
+                                    INFO
+                                </span>
+</td>
+</tr>
+<!-- Log Entry 3 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
+                                2023-11-20 14:15:44
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="flex items-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium">
+<span class="material-symbols-outlined text-[18px]">error</span>
+                                    Error
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs md:max-w-md truncate">
+                                Fondos insuficientes para abrir posición SHORT ETH/USDT
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<span class="inline-flex items-center rounded-full bg-red-100 dark:bg-red-900/30 px-2.5 py-0.5 text-xs font-bold text-red-700 dark:text-red-400">
+                                    FAILED
+                                </span>
+</td>
+</tr>
+<!-- Log Entry 4 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
+                                2023-11-20 14:02:12
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                                    Orden
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs md:max-w-md truncate">
+                                Take Profit alcanzado: Venta BTC/USDT a 35,800.00
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2.5 py-0.5 text-xs font-bold text-green-700 dark:text-green-400">
+                                    SUCCESS
+                                </span>
+</td>
+</tr>
+<!-- Log Entry 5 -->
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-700 dark:text-slate-300">
+                                2023-11-20 13:45:00
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                                    Sistema
+                                </span>
+</td>
+<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 max-w-xs md:max-w-md truncate">
+                                Análisis de tendencia SuperTrend (H4) completado: Bullish
+                            </td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<span class="inline-flex items-center rounded-full bg-blue-100 dark:bg-blue-900/30 px-2.5 py-0.5 text-xs font-bold text-blue-700 dark:text-blue-400">
+                                    INFO
+                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Placeholder -->
+<div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<span class="text-xs text-slate-500 dark:text-slate-400">Mostrando 5 de 1,240 entradas</span>
+<div class="flex gap-2">
+<button class="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="p-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Footer -->
+<footer class="mt-auto py-8 text-center text-slate-400 dark:text-slate-600 text-sm">
+<p>© 2023 SuperTrend Bot UI Design - Sistema en Funcionamiento</p>
+</footer>
+</div>
+</body></html>
