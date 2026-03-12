@@ -133,7 +133,7 @@ function renderLogs(logs) {
 async function refresh() {
   const [s, cfg] = await Promise.all([
     getState(),
-    new Promise(r => chrome.storage.local.get(["testnet","symbol","interval","majorInterval","maxDailyLossPct"], r))
+    new Promise(r => chrome.storage.local.get(["testnet","symbol","interval","majorInterval","maxDailyLossPct","autoTrade"], r))
   ]);
   renderState(s, cfg);
 }

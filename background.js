@@ -51,7 +51,7 @@ async function getCfg() {
         apiKey:          d.apiKey       || "",
         apiSecret:       d.apiSecret    || "",
         testnet:         d.testnet      !== false,
-        demo_mode:       d.demo_mode    !== false,
+        demo_mode:       d.demo_mode    === true,
         symbol:          d.symbol       || "BTCUSDT",
         qty:             d.qty          || "10",
         interval:        d.interval     || "60",
@@ -373,14 +373,14 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
     chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
     tick();
     saveState();
-    respond({ ok: true });
+    respond({ ok: true, status: "started" });
   }
   if (msg.type === "STOP" || msg.type === "STOP_BOT") {
     state.running = false;
     chrome.alarms.clear(ALARM_NAME);
     log("warn","Bot detenido manualmente");
     saveState();
-    respond({ ok: true });
+    respond({ ok: true, status: "stopped" });
   }
   if (msg.type === "GET_STATE") {
     respond({ ok: true, state });
