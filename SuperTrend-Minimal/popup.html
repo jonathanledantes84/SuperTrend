@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<title>SuperTrend Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+[data-theme="dark"]{
+  --bg0:#080b10;--bg1:#0d1117;--bg2:#111820;--border:#1c2535;--border2:#2a3a50;
+  --g:#00ff88;--g2:#00ff8818;--r:#ff4466;--r2:#ff446618;--y:#ffcc44;--b:#44aaff;
+  --muted:#3a4a5e;--text:#c8d8e8;--dim:#566880;
+  --sbar:#0a0e14;--ft:#0a0e14;--hover:#111820;--rowb:#111820;--inp:#111820;
+}
+[data-theme="light"]{
+  --bg0:#f0f4f8;--bg1:#ffffff;--bg2:#f7fafc;--border:#dde4ed;--border2:#b0bfd0;
+  --g:#00aa55;--g2:#00aa5515;--r:#e02040;--r2:#e0204015;--y:#c8870a;--b:#0077cc;
+  --muted:#9baabb;--text:#1a2535;--dim:#6b7a8d;
+  --sbar:#e8eef5;--ft:#e8eef5;--hover:#f0f4f8;--rowb:#edf1f6;--inp:#f0f4f8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:320px;background:var(--bg0);color:var(--text);font-family:'Space Mono',monospace;font-size:11px;overflow:hidden;transition:background .2s,color .2s}
+.hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.hd-l{display:flex;align-items:center;gap:8px}
+.logo{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--g),var(--b));display:flex;align-items:center;justify-content:center;font-size:14px}
+.htitle{font-size:12px;font-weight:700;color:var(--text)}
+.hsub{font-size:8px;color:var(--dim);letter-spacing:.1em}
+.hd-r{display:flex;align-items:center;gap:4px}
+.badge{font-size:8px;padding:2px 6px;border-radius:3px;background:#ffcc4418;color:var(--y);border:1px solid #ffcc4430}
+.badge.real{background:var(--r2);color:var(--r);border-color:#ff446630}
+.badge.blocked{background:var(--r2);color:var(--r);border-color:#ff446630;animation:pulse 1s ease-in-out infinite}
+.icon-btn,.theme-btn{background:none;border:1px solid var(--border);color:var(--dim);font-size:12px;width:24px;height:24px;border-radius:4px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.icon-btn:hover,.theme-btn:hover{border-color:var(--border2);color:var(--text)}
+.icon-btn.active{border-color:var(--b);color:var(--b)}
+.sbar{display:flex;align-items:center;gap:7px;padding:4px 14px;background:var(--sbar);border-bottom:1px solid var(--border);font-size:8px;color:var(--dim)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.dot.run{background:var(--g);box-shadow:0 0 7px var(--g);animation:pulse 2s ease-in-out infinite}
+.dot.stop{background:var(--r)}.dot.blocked{background:var(--r);box-shadow:0 0 7px var(--r)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.cell{background:var(--bg1);padding:7px 10px}
+.clabel{font-size:7px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.cval{font-size:13px;font-weight:700;color:var(--text)}
+.cval.sm{font-size:11px}.cval.g{color:var(--g)}.cval.r{color:var(--r)}.cval.y{color:var(--y)}
+/* trend row - shows both timeframes */
+.trow{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+.tcell{background:var(--bg1);padding:6px 10px}
+.tlabel{font-size:7px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.tval{font-size:10px;font-weight:700}
+.up{color:var(--g)}.dn{color:var(--r)}.fl{color:var(--dim)}
+/* daily risk bar */
+.risk-bar{padding:5px 12px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.risk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.risk-label{font-size:7px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
+.risk-val{font-size:9px;font-weight:700}
+.risk-track{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.risk-fill{height:100%;border-radius:2px;transition:width .3s,background .3s}
+.blocked-banner{padding:8px 14px;background:var(--r2);border-bottom:1px solid color-mix(in srgb,var(--r) 30%,transparent);font-size:9px;color:var(--r);display:none;text-align:center}
+.blocked-banner button{background:none;border:1px solid var(--r);color:var(--r);font-family:'Space Mono',monospace;font-size:8px;padding:2px 8px;border-radius:3px;cursor:pointer;margin-top:4px;display:block;margin:4px auto 0}
+.blocked-banner button:hover{background:var(--r2)}
+/* position */
+.pos-box{margin:6px 10px;border-radius:6px;border:1px solid var(--border);overflow:hidden;display:none}
+.pos-box.show{display:block}
+.pos-header{padding:5px 10px;font-size:9px;font-weight:700}
+.pos-header.buy{background:var(--g2);color:var(--g);border-bottom:1px solid color-mix(in srgb,var(--g) 20%,transparent)}
+.pos-header.sell{background:var(--r2);color:var(--r);border-bottom:1px solid color-mix(in srgb,var(--r) 20%,transparent)}
+.pos-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
+.pos-cell{background:var(--bg1);padding:5px 8px}
+.pos-label{font-size:7px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+.pos-val{font-size:10px;font-weight:700;color:var(--text)}
+.pos-val.sl{color:var(--r)}.pos-val.tp{color:var(--g)}
+.close-btn{margin:5px 8px;padding:4px 0;width:calc(100% - 16px);background:none;border:1px solid var(--border);color:var(--dim);font-family:'Space Mono',monospace;font-size:8px;cursor:pointer;border-radius:3px;transition:all .15s}
+.close-btn:hover{border-color:var(--r);color:var(--r);background:var(--r2)}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:7px 10px;border-top:1px solid var(--border)}
+.btn{padding:7px 0;border:none;border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:all .15s}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-g{background:var(--g2);color:var(--g);border:1px solid color-mix(in srgb,var(--g) 30%,transparent)}
+.btn-g:hover:not(:disabled){background:color-mix(in srgb,var(--g) 15%,transparent)}
+.btn-r{background:var(--r2);color:var(--r);border:1px solid color-mix(in srgb,var(--r) 30%,transparent)}
+.btn-r:hover:not(:disabled){background:color-mix(in srgb,var(--r) 15%,transparent)}
+.errbar{padding:5px 14px;background:color-mix(in srgb,var(--r) 10%,transparent);border-bottom:1px solid color-mix(in srgb,var(--r) 25%,transparent);font-size:8px;color:var(--r);display:none}
+.sec-title{font-size:7px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase;padding:5px 14px 3px;background:var(--bg1)}
+.olist{max-height:90px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;background:var(--bg1)}
+.orow{display:flex;align-items:center;gap:5px;padding:3px 12px;border-bottom:1px solid var(--rowb)}
+.orow:hover{background:var(--hover)}
+.otag{font-size:8px;font-weight:700;padding:1px 5px;border-radius:2px;min-width:36px;text-align:center}
+.otag.buy{background:var(--g2);color:var(--g)}.otag.sell{background:var(--r2);color:var(--r)}
+.otag.close,.otag.señal,.otag.manual{background:#44aaff18;color:var(--b)}
+.otag.sl{background:var(--r2);color:var(--r)}.otag.tp{background:var(--g2);color:var(--g)}
+.oinfo{flex:1;font-size:8px;color:var(--text)}
+.opnl{font-size:8px;font-weight:700}.opnl.g{color:var(--g)}.opnl.r{color:var(--r)}
+.otime{font-size:7px;color:var(--dim)}
+.oempty{padding:12px;text-align:center;color:var(--dim);font-size:9px}
+/* logs */
+.logs-hd{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:var(--bg1);border-bottom:1px solid var(--border)}
+.logs-title{font-size:9px;font-weight:700}
+.clear-btn{background:none;border:1px solid var(--border);color:var(--dim);font-family:'Space Mono',monospace;font-size:8px;padding:2px 7px;border-radius:3px;cursor:pointer;transition:all .15s}
+.clear-btn:hover{border-color:var(--r);color:var(--r)}
+.loglist{height:290px;overflow-y:auto;padding:2px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;background:var(--bg0)}
+.lrow{display:flex;align-items:flex-start;gap:6px;padding:4px 10px;border-bottom:1px solid var(--rowb)}
+.lrow:hover{background:var(--hover)}
+.ltime{color:var(--dim);white-space:nowrap;font-size:8px;margin-top:1px;flex-shrink:0}
+.ldot{width:6px;height:6px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.ldot.info{background:var(--b)}.ldot.ok{background:var(--g)}.ldot.warn{background:var(--y)}.ldot.error{background:var(--r);box-shadow:0 0 4px var(--r)}
+.lmsg{flex:1;line-height:1.4;font-size:9px}
+.lmsg.error{color:var(--r)}.lmsg.ok{color:var(--g)}.lmsg.warn{color:var(--y)}.lmsg.info{color:var(--text)}
+.lempty{padding:40px 14px;text-align:center;color:var(--dim);font-size:9px}
+/* settings */
+.settings{padding:12px;background:var(--bg0);max-height:400px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.stitle{font-size:11px;font-weight:700;color:var(--text);margin-bottom:10px}
+.sgroup{font-size:8px;color:var(--b);letter-spacing:.1em;text-transform:uppercase;margin:10px 0 6px;padding-bottom:3px;border-bottom:1px solid var(--border)}
+.field{margin-bottom:8px}
+.field label{display:block;font-size:8px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px}
+.field input,.field select{width:100%;background:var(--inp);border:1px solid var(--border);color:var(--text);font-family:'Space Mono',monospace;font-size:10px;padding:6px 10px;border-radius:4px;outline:none;transition:border .15s}
+.field input:focus,.field select:focus{border-color:var(--b)}
+.field input::placeholder{color:var(--muted)}
+.field select option{background:var(--bg1);color:var(--text)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.eye-wrap{position:relative}.eye-wrap input{padding-right:28px}
+.eye-btn{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);cursor:pointer;font-size:11px;padding:0}
+.save-btn{width:100%;padding:8px;margin-top:6px;background:var(--g2);color:var(--g);border:1px solid color-mix(in srgb,var(--g) 30%,transparent);border-radius:4px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:all .15s}
+.save-btn:hover{background:color-mix(in srgb,var(--g) 15%,transparent)}
+.hint{font-size:7px;color:var(--dim);margin-top:3px;line-height:1.5}
+.hint a{color:var(--b);text-decoration:none}
+.divider{border:none;border-top:1px solid var(--border);margin:8px 0}
+.msg{margin-top:6px;padding:6px 10px;border-radius:4px;font-size:8px;text-align:center;display:none}
+.msg.ok{background:var(--g2);color:var(--g);border:1px solid color-mix(in srgb,var(--g) 30%,transparent);display:block}
+.msg.err{background:var(--r2);color:var(--r);border:1px solid color-mix(in srgb,var(--r) 30%,transparent);display:block}
+
+/* chart tab */
+.chart-wrap{padding:8px 10px;background:var(--bg0)}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.chart-title{font-size:9px;font-weight:700;color:var(--text)}
+.chart-tf{display:flex;gap:3px}
+.tf-btn{background:none;border:1px solid var(--border);color:var(--dim);font-family:'Space Mono',monospace;font-size:7px;padding:2px 5px;border-radius:3px;cursor:pointer;transition:all .15s}
+.tf-btn.active{border-color:var(--b);color:var(--b);background:#44aaff12}
+.tf-btn:hover{border-color:var(--border2);color:var(--text)}
+canvas#chart{width:100%;border-radius:4px;border:1px solid var(--border);display:block}
+.chart-legend{display:flex;align-items:center;gap:10px;margin-top:5px;padding:0 2px}
+.leg-item{display:flex;align-items:center;gap:3px;font-size:7px;color:var(--dim)}
+.leg-dot{width:8px;height:2px;border-radius:1px}
+
+.ft{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:var(--ft);border-top:1px solid var(--border)}
+.ft-info{color:var(--dim);font-size:8px}
+.rf-btn{background:none;border:1px solid var(--border);color:var(--dim);font-family:'Space Mono',monospace;font-size:8px;padding:2px 7px;border-radius:3px;cursor:pointer;transition:all .15s}
+.rf-btn:hover{border-color:var(--border2);color:var(--text)}
+</style>
+</head>
+<body>
+<div class="hd">
+  <div class="hd-l">
+    <div class="logo">⚡</div>
+    <div><div class="htitle">SuperTrend Bot</div><div class="hsub">BYBIT V5 · PRO</div></div>
+  </div>
+  <div class="hd-r">
+    <div class="badge" id="modeBadge">TESTNET</div>
+    <button class="theme-btn" id="themeBtn">🌙</button>
+    <button class="icon-btn active" id="tabDash" title="Panel">📊</button>
+    <button class="icon-btn" id="tabChart" title="Gráfico">📈</button>
+    <button class="icon-btn" id="tabLogs" title="Logs">📋</button>
+    <button class="icon-btn" id="tabCfg"  title="Configuración">⚙</button>
+  </div>
+</div>
+<div class="sbar">
+  <div class="dot" id="dot"></div>
+  <span id="sbarText">Cargando...</span>
+</div>
+
+<!-- DASHBOARD -->
+<div id="pageDash">
+  <div class="errbar" id="errBar"></div>
+  <div class="blocked-banner" id="blockedBanner">
+    🚫 Límite de pérdida diaria alcanzado — Bot pausado
+    <button id="resetDailyBtn">↺ Resetear y reanudar</button>
+  </div>
+  <div class="grid">
+    <div class="cell"><div class="clabel">Precio</div><div class="cval sm" id="price">—</div></div>
+    <div class="cell"><div class="clabel">Balance</div><div class="cval sm" id="balance">—</div></div>
+    <div class="cell"><div class="clabel">Estado</div><div class="cval" id="bstate">—</div></div>
+  </div>
+  <!-- Tendencias dual -->
+  <div class="trow">
+    <div class="tcell">
+      <div class="tlabel" id="tLabel1">SUPERTREND 1H</div>
+      <div class="tval" id="trend1"><span class="fl">— Esperando</span></div>
+    </div>
+    <div class="tcell">
+      <div class="tlabel" id="tLabel2">FILTRO 4H</div>
+      <div class="tval" id="trend2"><span class="fl">— Esperando</span></div>
+    </div>
+  </div>
+  <!-- Barra de riesgo diario -->
+  <div class="risk-bar">
+    <div class="risk-top">
+      <span class="risk-label">PnL HOY</span>
+      <span class="risk-val" id="dailyPnlVal">+0.00 U</span>
+    </div>
+    <div class="risk-track"><div class="risk-fill" id="riskFill" style="width:0%;background:var(--g)"></div></div>
+  </div>
+  <!-- Posición abierta -->
+  <div class="pos-box" id="posBox">
+    <div class="pos-header" id="posHeader">POSICIÓN ABIERTA</div>
+    <div class="pos-grid">
+      <div class="pos-cell"><div class="pos-label">Entrada</div><div class="pos-val" id="posEntry">—</div></div>
+      <div class="pos-cell"><div class="pos-label">Stop Loss</div><div class="pos-val sl" id="posSL">—</div></div>
+      <div class="pos-cell"><div class="pos-label">Take Profit</div><div class="pos-val tp" id="posTP">—</div></div>
+    </div>
+    <div class="pos-grid" style="margin-top:1px">
+      <div class="pos-cell"><div class="pos-label">Qty</div><div class="pos-val" id="posQty">—</div></div>
+      <div class="pos-cell"><div class="pos-label">PnL</div><div class="pos-val" id="posPnl">—</div></div>
+      <div class="pos-cell"><div class="pos-label">Precio</div><div class="pos-val" id="posPrice">—</div></div>
+    </div>
+    <button class="close-btn" id="closePosBtn">✕ Cerrar manualmente</button>
+  </div>
+  <div class="btns">
+    <button class="btn btn-g" id="btnStart">▶ Iniciar</button>
+    <button class="btn btn-r" id="btnStop">■ Detener</button>
+  </div>
+  <div class="sec-title">HISTORIAL</div>
+  <div class="olist" id="olist"><div class="oempty">Sin operaciones aún</div></div>
+</div>
+
+<!-- LOGS -->
+<div id="pageLogs" style="display:none">
+  <div class="logs-hd">
+    <span class="logs-title">📋 Log de actividad</span>
+    <button class="clear-btn" id="clearLogsBtn">✕ Limpiar</button>
+  </div>
+  <div class="loglist" id="loglist"><div class="lempty">Sin actividad — iniciá el bot</div></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="pageCfg" style="display:none">
+<div class="settings">
+  <div class="stitle">⚙ Configuración</div>
+  <div class="sgroup">API Bybit</div>
+  <div class="field"><label>API Key</label><input type="text" id="inKey" placeholder="Pegá tu API Key"></div>
+  <div class="field">
+    <label>Secret Key</label>
+    <div class="eye-wrap">
+      <input type="password" id="inSecret" placeholder="Pegá tu Secret Key">
+      <button class="eye-btn" id="eyeBtn">👁</button>
+    </div>
+  </div>
+  <div class="hint">Bybit → Avatar → API Management → Crear key con permisos de <strong>Contratos</strong></div>
+  <hr class="divider">
+  <div class="sgroup">Trading</div>
+  <div class="field-row">
+    <div class="field"><label>Modo</label>
+      <select id="inTestnet"><option value="true">TESTNET</option><option value="false">REAL ⚠</option></select>
+    </div>
+    <div class="field"><label>Par</label><input type="text" id="inSymbol" placeholder="BTCUSDT"></div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>USDT por orden</label><input type="text" id="inQty" placeholder="10"></div>
+    <div class="field"><label>Apalancamiento</label>
+      <select id="inLeverage">
+        <option value="1">1x (sin apalancamiento)</option>
+        <option value="2">2x</option>
+        <option value="3">3x</option>
+        <option value="5">5x</option>
+        <option value="10">10x ⚠</option>
+      </select>
+    </div>
+  </div>
+  <div class="field-row">
+    <div class="field"><label>Timeframe señal</label>
+      <select id="inInterval">
+        <option value="15">15 min</option>
+        <option value="60" selected>1 hora</option>
+        <option value="240">4 horas</option>
+      </select>
+    </div>
+    <div class="field"><label>Filtro mayor</label>
+      <select id="inMajor">
+        <option value="60">1 hora</option>
+        <option value="240" selected>4 horas</option>
+        <option value="D">1 día</option>
+      </select>
+    </div>
+  </div>
+  <hr class="divider">
+  <div class="sgroup">Gestión de riesgo</div>
+  <div class="field-row3">
+    <div class="field"><label>Stop Loss %</label><input type="number" id="inSL" placeholder="2" min="0.1" step="0.1"><div class="hint">% desde entrada</div></div>
+    <div class="field"><label>Take Profit %</label><input type="number" id="inTP" placeholder="4" min="0.1" step="0.1"><div class="hint">% desde entrada</div></div>
+    <div class="field"><label>Ratio R:R</label><div style="padding:6px 0;font-size:11px;font-weight:700" id="rrLabel">1:2</div><div class="hint">TP ÷ SL</div></div>
+  </div>
+  <div class="field">
+    <label>Límite pérdida diaria %</label>
+    <input type="number" id="inMaxLoss" placeholder="5" min="1" max="50" step="0.5">
+    <div class="hint">% del balance — bot se detiene si se supera. Ej: 5% de $1000 = $50 máximo de pérdida por día</div>
+  </div>
+  <button class="save-btn" id="saveBtn">💾 Guardar configuración</button>
+  <div class="msg" id="cfgMsg"></div>
+</div>
+</div>
+
+
+<!-- CHART -->
+<div id="pageChart" style="display:none">
+  <div class="chart-wrap">
+    <div class="chart-header">
+      <span class="chart-title" id="chartTitle">BTCUSDT · 15MIN</span>
+      <div class="chart-tf">
+        <button class="tf-btn active" data-tf="15">15m</button>
+        <button class="tf-btn" data-tf="60">1h</button>
+        <button class="tf-btn" data-tf="240">4h</button>
+        <button class="tf-btn" data-tf="D">1D</button>
+      </div>
+    </div>
+    <canvas id="chart" width="300" height="200"></canvas>
+    <div class="chart-legend">
+      <div class="leg-item"><div class="leg-dot" style="background:#00ff88"></div>SuperTrend ▲</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ff4466"></div>SuperTrend ▼</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#44aaff;opacity:.6"></div>Precio actual</div>
+      <span style="margin-left:auto;font-size:7px;color:var(--dim)" id="chartUpd">—</span>
+    </div>
+  </div>
+</div>
+
+<div class="ft">
+  <span class="ft-info" id="lastUpd">—</span>
+  <button class="rf-btn" id="rfBtn">↻ Refrescar</button>
+</div>
+<script src="chart.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
