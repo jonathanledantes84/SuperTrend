@@ -10,5 +10,5 @@
 7. Finalize: Update README.md, suggest zip/build/test cmd.
 8. attempt_completion.
 
-**Progress: 2/8**
+**Progress: 3/8**
 
