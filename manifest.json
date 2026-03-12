@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "SuperTrend Bot",
+  "version": "1.1",
+  "description": "Bot de trading SuperTrend para Bybit Spot — todo en la extensión",
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://api.bybit.com/*",
+    "https://api-testnet.bybit.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16":  "icon16.png",
+      "48":  "icon48.png",
+      "128": "icon128.png"
+    }
+  }
+}
