@@ -1,24 +1,20 @@
 {
   "manifest_version": 3,
-  "name": "SuperTrend Bybit Bot",
+  "name": "SuperTrend Bot Extension",
   "version": "1.0.0",
-  "description": "Bot de trading SuperTrend para Bybit Spot con IA integrado en tu navegador.",
+  "description": "Bot de trading SuperTrend para Bybit Spot con IA",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon.png"
   },
   "permissions": [
     "storage",
-    "alarms",
-    "notifications"
+    "activeTab"
   ],
   "host_permissions": [
     "https://api.bybit.com/*",
     "https://api-testnet.bybit.com/*"
   ],
-  "background": {
-    "service_worker": "background.js"
-  },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   }

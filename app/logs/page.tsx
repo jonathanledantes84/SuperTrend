@@ -1,45 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Terminal, AlertCircle, Info, CheckCircle2, Copy, Trash2, Download } from 'lucide-react';
 
+const mockLogs = [
+  { id: 1, type: 'info', message: 'Bot iniciado correctamente. Conectado a Bybit Mainnet.', time: '10:45:22' },
+  { id: 2, type: 'success', message: 'Señal LONG recibida para BTC/USDT en 15m.', time: '10:46:05' },
+  { id: 3, type: 'success', message: 'Orden Market ejecutada: Compra 0.05 BTC a $88,900.', time: '10:46:06' },
+  { id: 4, type: 'info', message: 'Stop Loss configurado en $86,677 (2.5%).', time: '10:46:07' },
+  { id: 5, type: 'warning', message: 'Alta volatilidad detectada. Ajustando parámetros de riesgo.', time: '11:15:30' },
+  { id: 6, type: 'error', message: 'Error de red temporal al consultar balance. Reintentando...', time: '11:30:12' },
+  { id: 7, type: 'info', message: 'Conexión restaurada.', time: '11:30:15' },
+];
+
 export default function LogsPage() {
-  const [logs, setLogs] = useState<any[]>([]);
+  const [logs, setLogs] = useState(mockLogs);
 
-  useEffect(() => {
-    const loadLogs = async () => {
-      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.get(['logs'], (result) => {
-          if (result.logs) setLogs(result.logs);
-        });
-      } else {
-        const saved = localStorage.getItem('bot_logs');
-        if (saved) setLogs(JSON.parse(saved));
-      }
-    };
-    loadLogs();
-
-    // Listen for storage changes to update logs in real-time
-    const handleStorageChange = (changes: any) => {
-      if (changes.logs) {
-        setLogs(changes.logs.newValue);
-      }
-    };
-
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.onChanged.addListener(handleStorageChange);
-      return () => chrome.storage.onChanged.removeListener(handleStorageChange);
-    }
-  }, []);
-
-  const clearLogs = () => {
-    setLogs([]);
-    if (typeof chrome !== 'undefined' && chrome.storage) {
-      chrome.storage.local.set({ logs: [] });
-    } else {
-      localStorage.removeItem('bot_logs');
-    }
-  };
+  const clearLogs = () => setLogs([]);
   
   const copyLogs = () => {
     const text = logs.map(l => `[${l.time}] ${l.message}`).join('\n');
