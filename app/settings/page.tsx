@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Key, Settings as SettingsIcon, ShieldAlert, CheckCircle2, RefreshCw, Save } from 'lucide-react';
 
+import { storage } from '@/lib/storage';
+
 export default function SettingsPage() {
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
@@ -11,20 +13,28 @@ export default function SettingsPage() {
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setTimeout(() => {
-        setApiKey(localStorage.getItem('bybit_api_key') || '');
-        setApiSecret(localStorage.getItem('bybit_api_secret') || '');
-        setEnv(localStorage.getItem('bybit_env') || 'mainnet');
-      }, 0);
-    }
+    const loadSettings = async () => {
+      const savedKey = await storage.get('bybit_api_key');
+      const savedSecret = await storage.get('bybit_api_secret');
+      const savedEnv = await storage.get('bybit_env');
+      
+      if (savedKey) setApiKey(savedKey);
+      if (savedSecret) setApiSecret(savedSecret);
+      if (savedEnv) setEnv(savedEnv);
+    };
+    loadSettings();
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsSaving(true);
-    localStorage.setItem('bybit_api_key', apiKey);
-    localStorage.setItem('bybit_api_secret', apiSecret);
-    localStorage.setItem('bybit_env', env);
+    await storage.set('bybit_api_key', apiKey);
+    await storage.set('bybit_api_secret', apiSecret);
+    await storage.set('bybit_env', env);
+    
+    // Notify background script that settings changed
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'SETTINGS_UPDATED' });
+    }
     
     setTimeout(() => {
       setIsSaving(false);

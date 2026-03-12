@@ -5,9 +5,43 @@ import { ArrowUpRight, Wallet, TrendingUp, Activity, Play, Square, Clock, Filter
 import { motion, AnimatePresence } from 'motion/react';
 import { SuperTrendChart } from '@/components/SuperTrendChart';
 
+import { storage } from '@/lib/storage';
+import { useEffect } from 'react';
+
 export default function Dashboard() {
   const [isQuickTradeOpen, setIsQuickTradeOpen] = useState(false);
   const [tradeType, setTradeType] = useState<'LONG' | 'SHORT'>('LONG');
+  const [isBotActive, setIsBotActive] = useState(false);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      const active = await storage.get('bot_active');
+      setIsBotActive(active === 'true' || active === true);
+    };
+    checkStatus();
+  }, []);
+
+  const handleStartBot = async () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'START_BOT' }, (response) => {
+        if (response?.status === 'started') setIsBotActive(true);
+      });
+    } else {
+      await storage.set('bot_active', 'true');
+      setIsBotActive(true);
+    }
+  };
+
+  const handleStopBot = async () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'STOP_BOT' }, (response) => {
+        if (response?.status === 'stopped') setIsBotActive(false);
+      });
+    } else {
+      await storage.set('bot_active', 'false');
+      setIsBotActive(false);
+    }
+  };
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto relative">
@@ -153,11 +187,19 @@ export default function Dashboard() {
           </h2>
           
           <div className="space-y-3">
-            <button className="w-full py-4 bg-[#FF6B00] text-white font-bold rounded-xl shadow-lg shadow-[#FF6B00]/30 hover:bg-[#FF6B00]/90 transition-all flex items-center justify-center gap-2">
+            <button 
+              onClick={handleStartBot}
+              disabled={isBotActive}
+              className={`w-full py-4 bg-[#FF6B00] text-white font-bold rounded-xl shadow-lg shadow-[#FF6B00]/30 hover:bg-[#FF6B00]/90 transition-all flex items-center justify-center gap-2 ${isBotActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
               <Play className="size-5" fill="currentColor" />
-              INICIAR ESTRATEGIA
+              {isBotActive ? 'BOT EN EJECUCIÓN' : 'INICIAR ESTRATEGIA'}
             </button>
-            <button className="w-full py-4 bg-slate-100 dark:bg-[#333333] text-slate-700 dark:text-slate-100 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-[#553c2e] transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-[#FF6B00]/20">
+            <button 
+              onClick={handleStopBot}
+              disabled={!isBotActive}
+              className={`w-full py-4 bg-slate-100 dark:bg-[#333333] text-slate-700 dark:text-slate-100 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-[#553c2e] transition-all flex items-center justify-center gap-2 border border-slate-200 dark:border-[#FF6B00]/20 ${!isBotActive ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
               <Square className="size-5" fill="currentColor" />
               DETENER BOT
             </button>
