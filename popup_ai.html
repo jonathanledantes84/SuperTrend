@@ -1,0 +1,39 @@
+<!-- AI Tab -->
+<div id="pageAI" style="display:none">
+  <div class="logs-hd">
+    <span class="logs-title">🤖 Asistente IA</span>
+    <button class="clear-btn" id="clearAI">Limpiar chat</button>
+  </div>
+  <div class="loglist" id="aiChat">
+    <div class="lempty">Preguntale sobre trading, SuperTrend o tu bot</div>
+  </div>
+  <div style="padding:10px">
+    <textarea id="aiInput" placeholder="Ej: 'Explicame como funciona el SuperTrend' " style="width:100%;height:60px;border:1px solid var(--border);background:var(--inp);color:var(--text);padding:8px;font-size:10px"></textarea>
+    <button id="aiSend" class="save-btn" style="margin-top:8px">Enviar</button>
+  </div>
+</div>
+
+<script>
+// AI proxy - send to bg msg for CSP safe
+g("tabAI").onclick = () => showTab("ai");
+g("clearAI").onclick = () => g("aiChat").innerHTML = '<div class="lempty">Chat limpio</div>';
+g("aiSend").onclick = async () => {
+  const input = g("aiInput");
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  const chat = g("aiChat");
+  chat.innerHTML += `<div class="lrow"><span class="lmsg" style="color:var(--b)">Tú: ${msg}</span></div>`;
+  chat.scrollTop = chat.scrollHeight;
+  g("aiSend").textContent = 'Enviando...';
+  try {
+    const res = await chrome.runtime.sendMessage({type:"AI_CHAT", prompt: msg});
+    chat.innerHTML += `<div class="lrow"><span class="lmsg ok">IA: ${res.reply}</span></div>`;
+  } catch(e) {
+    chat.innerHTML += `<div class="lrow"><span class="lmsg error">Error: ${e.message}. Configurá Gemini API key</span></div>`;
+  }
+  chat.scrollTop = chat.scrollHeight;
+  g("aiSend").textContent = 'Enviar';
+};
+</script>
+
