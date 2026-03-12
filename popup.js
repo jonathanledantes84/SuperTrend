@@ -44,8 +44,11 @@ function renderState(s, cfg) {
   if (!s) return;
   const blocked = s.blocked;
   g("dot").className = blocked ? "dot blocked" : s.running ? "dot run" : "dot stop";
+  const autoTradeOn = cfg?.autoTrade !== false;
   g("sbarText").textContent = blocked ? "🚫 Bot pausado — límite diario"
-    : s.running ? "Bot activo — chequea cada 1 minuto" : "Bot detenido";
+    : s.running
+      ? (autoTradeOn ? "Bot activo — auto-trade cada 1 minuto" : "Bot activo — solo señales (sin órdenes)")
+      : "Bot detenido";
   const mode = cfg?.testnet !== false ? "TESTNET" : "REAL";
   g("modeBadge").textContent = blocked ? "BLOQUEADO" : mode;
   g("modeBadge").className = blocked ? "badge blocked" : mode === "REAL" ? "badge real" : "badge";
@@ -130,7 +133,7 @@ function renderLogs(logs) {
 async function refresh() {
   const [s, cfg] = await Promise.all([
     getState(),
-    new Promise(r => chrome.storage.local.get(["testnet","symbol","interval","majorInterval","maxDailyLossPct"], r))
+    new Promise(r => chrome.storage.local.get(["testnet","symbol","interval","majorInterval","maxDailyLossPct","autoTrade"], r))
   ]);
   renderState(s, cfg);
 }
@@ -167,7 +170,7 @@ g("clearLogsBtn").addEventListener("click", () =>
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 function loadCfg() {
-  chrome.storage.local.get(["apiKey","apiSecret","testnet","symbol","qty","interval","majorInterval","slPct","tpPct","maxDailyLossPct"], d => {
+  chrome.storage.local.get(["apiKey","apiSecret","testnet","symbol","qty","interval","majorInterval","slPct","tpPct","maxDailyLossPct","autoTrade"], d => {
     g("inKey").value      = d.apiKey     || "";
     g("inSecret").value   = d.apiSecret  || "";
     g("inTestnet").value  = d.testnet === false ? "false" : "true";
@@ -178,6 +181,7 @@ function loadCfg() {
     g("inSL").value       = d.slPct      || "2";
     g("inTP").value       = d.tpPct      || "4";
     g("inMaxLoss").value  = d.maxDailyLossPct || "5";
+    g("inAutoTrade").value = d.autoTrade === false ? "false" : "true";
     updateRR();
   });
 }
@@ -202,7 +206,8 @@ g("saveBtn").addEventListener("click", () => {
     majorInterval: g("inMajor").value || "60",
     slPct: g("inSL").value || "2",
     tpPct: g("inTP").value || "4",
-    maxDailyLossPct: g("inMaxLoss").value || "5"
+    maxDailyLossPct: g("inMaxLoss").value || "5",
+    autoTrade: g("inAutoTrade").value !== "false"
   }, () => { showMsg("✓ Guardado — reiniciá el bot", "ok"); updateRR(); });
 });
 function showMsg(txt, type) {

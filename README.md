@@ -1,20 +1,72 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# SuperTrend Bot — Extensión Chrome MV3 (Bybit Spot)
 
-# Run and deploy your AI Studio app
+Extensión de Chrome **100% standalone** para operar en Bybit Spot con señales de SuperTrend.
 
-This contains everything you need to run your app locally.
+## Qué hace
 
-View your app in AI Studio: https://ai.studio/apps/42f72877-f71a-49f4-b016-14bed49a7e04
+- Calcula tendencia con **SuperTrend** en timeframe principal.
+- Usa **filtro de tendencia mayor** para validar señales.
+- Ejecuta **auto-trade** por señales:
+  - BUY: cuando SuperTrend cambia de bajista a alcista.
+  - SELL: cuando SuperTrend cambia de alcista a bajista.
+- Gestión de riesgo:
+  - Stop Loss %
+  - Take Profit %
+  - Límite de pérdida diaria
+- Notificaciones y logs en tiempo real.
+- Modo **TESTNET** y **REAL**.
+- Modo **solo señales** (sin ejecutar órdenes) con `Auto-trade: OFF`.
 
-## Run Locally
+## Estructura relevante
 
-**Prerequisites:**  Node.js
+- `manifest.json`: configuración MV3.
+- `background.js`: motor del bot y ejecución de órdenes.
+- `popup.html` + `popup.js`: interfaz y configuración.
+- `lib/bybit.js`: cliente Bybit V5 Spot (firmas HMAC + requests).
+- `lib/supertrend.js`: cálculo del indicador.
+- `chart.js`: render del gráfico del popup.
 
+## Instalación
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Descarga o clona el repo.
+2. Abre `chrome://extensions/`.
+3. Activa **Developer mode**.
+4. Haz click en **Load unpacked**.
+5. Selecciona esta carpeta del proyecto.
+
+## Configuración inicial
+
+1. Abre el popup de la extensión.
+2. Ve a **⚙ Configuración**.
+3. Completa:
+   - API Key
+   - Secret Key
+   - Modo (`TESTNET` recomendado para pruebas)
+   - Par (ej. `BTCUSDT`)
+   - USDT por orden
+   - Timeframes
+   - SL/TP y límite diario
+   - Auto-trade (`ON` para ejecutar, `OFF` para solo alertas)
+4. Guarda.
+5. Ve al dashboard y pulsa **Iniciar**.
+
+## Flujo de señales
+
+- `BUY` si `prevTrend = -1` y `currentTrend = 1`.
+- `SELL` si `prevTrend = 1` y `currentTrend = -1`.
+- Si hay filtro mayor contrario, la señal se ignora.
+- Con Auto-trade ON:
+  - BUY abre posición spot (compra con USDT).
+  - SELL cierra posición spot (vende BTC).
+- Con Auto-trade OFF:
+  - Solo registra/avisa señal, sin ejecutar orden.
+
+## Seguridad
+
+- Empieza siempre en **TESTNET**.
+- Usa API keys sin permisos de retiro.
+- Verifica tamaño de orden y límites de riesgo antes de pasar a REAL.
+
+## Nota
+
+Este proyecto está orientado a **extensión Chrome MV3**. Los archivos web heredados no son necesarios para operar el bot de la extensión.

@@ -1,4 +1,4 @@
-import { hmacSHA256, bybitRequest, getKlines, getBalance, getBTCBalance, placeOrder, getPositions } from "./lib/bybit.js";
+import { getKlines, getBalance, getBTCBalance, placeOrder } from "./lib/bybit.js";
 import { calcSuperTrend } from "./lib/supertrend.js";
 
 // background.js — SuperTrend Bot SPOT
@@ -45,13 +45,13 @@ async function getCfg() {
   return new Promise(resolve => {
     chrome.storage.local.get([
       "apiKey","apiSecret","testnet","symbol","qty","interval",
-      "slPct","tpPct","maxDailyLossPct","majorInterval"
+      "slPct","tpPct","maxDailyLossPct","majorInterval","autoTrade"
     ], d => {
       resolve({
         apiKey:          d.apiKey       || "",
         apiSecret:       d.apiSecret    || "",
         testnet:         d.testnet      !== false,
-        demo_mode:       d.demo_mode    !== false,
+        demo_mode:       d.demo_mode    === true,
         symbol:          d.symbol       || "BTCUSDT",
         qty:             d.qty          || "10",
         interval:        d.interval     || "60",
@@ -59,6 +59,7 @@ async function getCfg() {
         slPct:           parseFloat(d.slPct          || "2"),
         tpPct:           parseFloat(d.tpPct          || "4"),
         maxDailyLossPct: parseFloat(d.maxDailyLossPct) || 5,
+        autoTrade: d.autoTrade !== false,
       });
 
     });
@@ -313,12 +314,16 @@ async function tick() {
       const sellSignal = currentTrend === -1 && prevTrend ===  1;
 
       if (buySignal || sellSignal) {
+        const signalLabel = buySignal ? "BUY" : "SELL";
         const majorOk = state.trendMajor === null ||
           (buySignal  && state.trendMajor ===  1) ||
           (sellSignal && state.trendMajor === -1);
 
         if (!majorOk) {
-          log("warn","⚠ Señal " + (buySignal?"BUY":"SELL") + " ignorada — tendencia mayor contraria");
+          log("warn","⚠ Señal " + signalLabel + " ignorada — tendencia mayor contraria");
+        } else if (!cfg.autoTrade) {
+          log("info", "📡 Señal " + signalLabel + " detectada (auto-trade OFF)");
+          notify("📡 Señal " + signalLabel, cfg.symbol + " @ $" + price.toFixed(2) + " (sin ejecución)");
         } else {
           if (sellSignal && state.position.open) {
             log("ok","🔴 SELL — tendencias alineadas");
@@ -328,6 +333,8 @@ async function tick() {
             await buyBTC(cfg, price);
           } else if (buySignal && state.position.open) {
             log("info","BUY ignorado — ya tenemos BTC");
+          } else if (sellSignal && !state.position.open) {
+            log("info","SELL ignorado — no hay BTC para cerrar");
           }
         }
       } else {
@@ -355,7 +362,7 @@ chrome.alarms.onAlarm.addListener(alarm => {
 
 // ── Messages ──────────────────────────────────────────────────────────────────
 chrome.runtime.onMessage.addListener((msg, _, respond) => {
-  if (msg.type === "START") {
+  if (msg.type === "START" || msg.type === "START_BOT") {
     state.running = true;
     state.trend   = null;
     state.trendMajor = null;
@@ -366,14 +373,14 @@ chrome.runtime.onMessage.addListener((msg, _, respond) => {
     chrome.alarms.create(ALARM_NAME, { periodInMinutes: 1 });
     tick();
     saveState();
-    respond({ ok: true });
+    respond({ ok: true, status: "started" });
   }
-  if (msg.type === "STOP") {
+  if (msg.type === "STOP" || msg.type === "STOP_BOT") {
     state.running = false;
     chrome.alarms.clear(ALARM_NAME);
     log("warn","Bot detenido manualmente");
     saveState();
-    respond({ ok: true });
+    respond({ ok: true, status: "stopped" });
   }
   if (msg.type === "GET_STATE") {
     respond({ ok: true, state });
